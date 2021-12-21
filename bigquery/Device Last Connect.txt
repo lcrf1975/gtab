@@ -1,0 +1,3 @@
+select SerialNo, ServerName, Apn, LastConnect, Carrier, Network, DatabaseName, MyServerName, ResellerAccount, PlanDescription
+from `geotab-embedded.Summary.DeviceCurrentStatus`
+where SerialNo in('G7FB20F3012F')

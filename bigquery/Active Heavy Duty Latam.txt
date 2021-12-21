@@ -1,0 +1,167 @@
+WITH
+    -- Activation = First record/detection of VIN
+     ActiveVehicles AS
+    (
+        SELECT
+            Vin,
+            hardwareId,
+            DateFrom
+        FROM `geotab-bigdata.Vin.VinHistory` h
+        WHERE DateTo IS NULL
+    ),
+   
+   OtherVehicles AS
+    (
+        SELECT
+            distinct Vin,
+        hardwareId
+       from `geotab-embedded.Summary.DeviceCurrentStatus` where termination = 'No'
+       and regexp_contains(vin, '[^a-zA-Z0-9]')
+    ),
+    
+    
+    -- Find Devices which detected a Heavy Duty Truck Protocol
+    -- Match device to Vin based on Vin History
+    Protocol AS
+    (
+        SELECT DISTINCT
+             a.vin,
+            REGEXP_CONTAINs(Protocol,'J1(939)|(708)') AS IsTruckProtocol,
+            a.HardwareId
+        FROM
+            `geotab-embedded.DatasetProtocol.DeviceProtocols_*` p
+            INNER JOIN `geotab-embedded.DatasetProtocol.ProtocolDefinitions` d ON d.Id = p.ProtocolType  
+            inner JOIN ActiveVehicles a
+            ON a.hardwareId = p.hardwareId AND a.DateFrom < p.DateTime
+             WHERE
+            _TABLE_SUFFIX BETWEEN
+                FORMAT_DATE("%Y%m%d", DATE_SUB(CURRENT_DATE, INTERVAL 6 MONTH)) AND
+                FORMAT_DATE("%Y%m%d", DATE_SUB(CURRENT_DATE, INTERVAL 1 DAY))
+            
+           union distinct 
+           
+           SELECT 
+             b.vin,
+            REGEXP_CONTAINs(Protocol,'J1(939)|(708)') AS IsTruckProtocol,
+            b.HardwareId
+        FROM
+            `geotab-embedded.DatasetProtocol.DeviceProtocols_*` p
+            INNER JOIN `geotab-embedded.DatasetProtocol.ProtocolDefinitions` d ON d.Id = p.ProtocolType  
+            inner JOIN OtherVehicles b
+            using(hardwareid)
+        -- Use all availble protocol detection for data consistency
+        WHERE
+            _TABLE_SUFFIX BETWEEN
+                FORMAT_DATE("%Y%m%d", DATE_SUB(CURRENT_DATE, INTERVAL 6 MONTH)) AND
+                FORMAT_DATE("%Y%m%d", DATE_SUB(CURRENT_DATE, INTERVAL 1 DAY))
+    ),
+    
+    
+    Truck AS
+    (
+        SELECT DISTINCT a.Vin, a.HardwareId
+        FROM ActiveVehicles a
+            inner JOIN `geotab-bigdata.Vin.VinDecode` v using(vin)
+        WHERE REGEXP_CONTAINS(WeightClass,r'Class [6-8]')
+        
+        UNION all
+        
+        SELECT distinct Vin, HardwareId
+        FROM Protocol
+        WHERE
+          IsTruckProtocol IS TRUE
+       AND Vin NOT IN (SELECT Vin FROM Protocol WHERE IsTruckProtocol IS FALSE)
+          -- Only include vehicles with NULL WeightClass (thus not included in first part of UNION);
+          -- Specifically filter out 'Passenger' vehicles as many often have NULL WeightClass
+          -- In rare instances (~1/10000), a non-Heavy-Duty-Truck could use only Heavy-Duty Truck Protocol.
+          -- Example: Audi A5 used only J1939 AFTER VIN is known
+          -- Device ID: 551343356
+          -- VIN: WAUENCF55JA003402
+         AND Vin NOT IN (SELECT Vin FROM `geotab-bigdata.Vin.VinDecode` WHERE NOT WeightClass IS NULL OR VehicleType='Passenger')
+         
+       
+    ),
+    
+    
+    -- Reduce number of unknown makes by matching 3-char VIN prefix with other VINs with known Make
+    -- 3-string prefix = World Manufacturer Identifier = WMI
+    MatchUnknownMake AS
+    (
+        SELECT DISTINCT
+            substr(vin,0,3) AS wmi,
+            Make
+        FROM
+            `geotab-bigdata.Vin.VinDecode`
+        WHERE
+            Make IS NOT NULL
+            -- Match only if WMI use by only 1 make
+            AND substr(vin,0,3) in
+            (
+               SELECT substr(vin,0,3) AS wmi
+               FROM `geotab-bigdata.Vin.VinDecode`
+               GROUP BY 1
+               Having COUNT(DISTINCT Make) = 1
+            )
+    ),
+    
+   --Find devices and reseller account
+     --Find devices and reseller account
+   Country AS (
+  SELECT * FROM (SELECT
+    a.Country,
+    a.CountryCode,
+    a.Region,
+    a.HardwareId,
+    ROW_NUMBER() OVER (PARTITION BY a.HardwareId ORDER BY a.SfStatusDate DESC) AS RN1
+  FROM
+    `geotab-myadmin.DeviceInformation.DeviceLocation_*` AS a
+    LEFT JOIN
+    `geotab-embedded.Summary.DeviceCurrentStatus` AS b
+  ON
+    a.HardwareId = b.HardwareId
+  WHERE
+    _TABLE_SUFFIX >= FORMAT_DATE('%Y%m%d', DATE_SUB(CURRENT_DATE(), INTERVAL 3 MONTH)) AND b.PlanDescription <> 'Terminate Mode'
+    ) WHERE RN1 = 1)
+    
+SELECT
+    c.Country,
+    c.CountryCode, 
+    c.Region,
+    COUNT(DISTINCT t.HardwareId) AS Number
+FROM
+    Truck t
+    LEFT JOIN `geotab-bigdata.Vin.VinDecode` v ON v.Vin = t.Vin
+    LEFT JOIN MatchUnknownMake m ON m.Wmi = SUBSTR(t.Vin,0,3)
+    LEFT JOIN Country c ON t.HardwareId = c.HardwareId
+WHERE 
+  LOWER (c.Country) IN ("argentina", 
+                      "belize", 
+                      "bolivia", 
+                      "brazil", 
+                      "chile", 
+                      "colombia", 
+                      "costa rica", 
+                      "cuba", 
+                      "dominican republic", 
+                      "ecuador", 
+                      "el salvador", 
+                      "french guiana", 
+                      "guadeloupe", 
+                      "guatemala", 
+                      "guyana", 
+                      "haiti", 
+                      "honduras", 
+                      "martinique", 
+                      "mexico", 
+                      "nicaragua", 
+                      "panama", 
+                      "paraguay", 
+                      "peru", 
+                      "puerto rico", 
+                      "saint-barthélemy", 
+                      "saint-martin", 
+                      "suriname", 
+                      "uruguay", 
+                      "venezuela") 
+GROUP BY c.Country, c.CountryCode, c.Region
+ORDER BY Number DESC

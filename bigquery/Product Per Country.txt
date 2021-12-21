@@ -1,0 +1,14 @@
+SELECT
+    DS.ProductCode,
+    COUNT (DISTINCT DI.SerialNo) AS Units
+FROM
+  `geotab-myadmin.DeviceInformation.DeviceContract_20210429` DI
+INNER JOIN
+  `geotab-embedded.Summary.DeviceCurrentStatus` DS
+ON
+  DI.SerialNo = DS.SerialNo
+WHERE
+  LOWER(DI.ContactCountry) LIKE "%brazil%"
+  AND LOWER(DS.Termination) != "yes"
+GROUP BY 
+    1

@@ -1,0 +1,19 @@
+SELECT
+  CASE
+    WHEN DS.Country IS NULL THEN "Not Active"
+    ELSE DS.Country
+  END AS GPSCountry,
+  COUNT (DISTINCT DI.SerialNo) AS Total
+FROM
+  `geotab-myadmin.DeviceInformation.DeviceContract_20210113` DI
+INNER JOIN
+  `geotab-embedded.Summary.DeviceCurrentStatus` DS
+ON
+  DI.SerialNo = DS.SerialNo
+WHERE
+  LOWER(DI.ContactCountry) LIKE "%mexico%"
+  AND LOWER(DS.Termination) != "yes"
+GROUP BY
+  GPSCountry
+ORDER BY
+  Total DESC

@@ -1,0 +1,11 @@
+SELECT
+  DatabaseName,
+  Count(DatabaseName) AS Num
+FROM
+  `geotab-embedded.Summary.DeviceCurrentStatus`
+WHERE 
+  LOWER(ResellerAccount) LIKE "%tefp01%"
+  -- LOWER(DatabaseName) LIKE "%ariasat%"
+  AND LOWER(Termination) = "no"
+GROUP BY
+  1

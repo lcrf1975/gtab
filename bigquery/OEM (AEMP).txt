@@ -1,0 +1,32 @@
+SELECT
+  *
+FROM
+  `geotab-myserver.OEMMiddleware.Registry_202102*`
+WHERE
+  LOWER(RequestDetails) LIKE ('%ds842121c421%')
+  OR LOWER(RequestDetails) LIKE ('%ds872121c422%')
+  OR LOWER(RequestDetails) LIKE ('%ds862121c423%')
+  OR LOWER(RequestDetails) LIKE ('%dsfa2121d64d%')
+  OR LOWER(RequestDetails) LIKE ('%dsfa2121d64d%')
+
+SELECT
+  *
+FROM
+  `geotab-myserver.OEMMiddleware.Device_202102*`
+WHERE
+  LOWER(SerialNo) LIKE ('%ds842121c421%')
+  OR LOWER(SerialNo) LIKE ('%ds872121c422%')
+  OR LOWER(SerialNo) LIKE ('%ds862121c423%')
+  OR LOWER(SerialNo) LIKE ('%dsfa2121d64d%')
+  OR LOWER(SerialNo) LIKE ('%dsfa2121d64d%')
+
+SELECT
+  *
+FROM
+  `geotab-myserver.OEMMiddleware.GMAdapter_202102*`
+WHERE
+  LOWER(ResponseDetails) LIKE ('%ds842121c421%')
+  OR LOWER(ResponseDetails) LIKE ('%ds872121c422%')
+  OR LOWER(ResponseDetails) LIKE ('%ds862121c423%')
+  OR LOWER(ResponseDetails) LIKE ('%dsfa2121d64d%')
+  OR LOWER(ResponseDetails) LIKE ('%dsfa2121d64d%')

@@ -1,0 +1,5 @@
+SELECT * FROM `geotab-embedded.DatasetVin.VinDecoder` 
+WHERE Make = "HYUNDAI"
+AND Model like "KONA"
+AND Year IN ("2020", "2021", "2022")
+LIMIT 1000

@@ -1,0 +1,9 @@
+SELECT
+    DatabaseName
+FROM
+  `geotab-embedded.Summary.DeviceCurrentStatus`
+WHERE
+    LOWER(DatabaseName) like '%pepsico%'
+    AND LOWER(Country) like '%brazil%'
+GROUP BY 
+    1

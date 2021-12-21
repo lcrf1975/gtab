@@ -1,0 +1,36 @@
+SELECT
+  *
+FROM
+  `geotab-embedded.DatasetEngineStatus.EngineStatusSupport`
+WHERE
+  Make = 'DACIA'
+  AND Model = 'SANDERO'
+  AND PercentageSupported > 50
+
+SELECT
+  *
+FROM
+  `geotab-embedded.DatasetEngineStatus.EngineStatusSupport_*`
+WHERE
+  _TABLE_SUFFIX = FORMAT_TIMESTAMP('%Y%m%d', CURRENT_TIMESTAMP())
+  AND LOWER (Make) LIKE '%dacia%'
+  AND LOWER (Model) LIKE '%sandero%'
+  AND PercentageSupported > 0
+
+SELECT
+  Make,
+  Model,
+  Year,
+  Description
+FROM
+  `geotab-embedded.DatasetEngineStatus.EngineStatusSupport_*`
+WHERE
+  _TABLE_SUFFIX = FORMAT_TIMESTAMP('%Y%m%d', CURRENT_TIMESTAMP())
+  AND LOWER (Make) LIKE '%dacia%'
+  AND LOWER (Model) LIKE '%sandero%'
+  AND PercentageSupported > 99
+GROUP BY
+    1,
+    2,
+    3,
+    4

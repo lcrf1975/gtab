@@ -1,0 +1,23 @@
+SELECT
+  DP.HardwareId,
+  DS.SerialNo,
+  DS.ResellerAccount,
+  DS.ProductCode,
+  DS.PlanDescription,
+  DS.LastConnect,
+  CustomParam_fSilent
+FROM
+  geotab-embedded.DatasetParameter.DeviceParametersFull_20201218 DP
+INNER JOIN
+  geotab-embedded.Summary.DeviceCurrentStatus_20201218 DS
+ON
+  DP.HardwareId = DS.HardwareId
+WHERE
+  LOWER(DS.DatabaseName) LIKE 'pepsico_brasil%'
+  AND DS.FirstConnect IS NOT NULL
+  AND DS.LastConnect IS NOT NULL
+  AND LOWER(DS.PlanDescription) NOT LIKE 'terminate%'
+  AND lower(DS.Termination) like 'no%'
+  AND DP.CustomParam_fSilent = FALSE
+ORDER BY
+  DS.LastConnect DESC

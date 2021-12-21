@@ -1,0 +1,9 @@
+SELECT
+  VehicleType,
+  COUNT (Vin) AS Total
+FROM
+  `geotab-myserver.VinDecodeAnalysis.VinDecode_20190813`
+WHERE
+  LOWER(Country) LIKE "%brazil%"
+GROUP BY
+  VehicleType

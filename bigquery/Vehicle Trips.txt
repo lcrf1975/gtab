@@ -1,0 +1,12 @@
+SELECT
+  STATUS.SerialNo,
+  TRIPS.*
+FROM
+  `geotab-myserver.MyGeotab.Trips` TRIPS
+INNER JOIN `geotab-embedded.Summary.DeviceCurrentStatus` STATUS
+ON TRIPS.HardwareId = STATUS.HardwareId
+WHERE
+  DATE(TRIPS._PARTITIONTIME) > "2021-02-01"
+  AND STATUS.SerialNo = 'G7C520DCC1FA'
+ORDER BY
+  TRIPS.StreamDateTime DESC

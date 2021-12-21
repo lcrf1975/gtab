@@ -1,0 +1,26 @@
+SELECT
+  Model,
+  Year
+FROM
+  `geotab-embedded.DatasetEngineStatus.EngineStatusSupport_20201222`
+WHERE
+  LOWER (Make) LIKE '%hyundai%'
+  AND PercentageSupported > 0
+GROUP BY
+  1,
+  2
+ORDER BY
+  1,
+  2
+
+SELECT
+  Model,
+  Year
+FROM
+  `geotab-embedded.DatasetEngineStatus.EngineStatusSupport`
+WHERE
+  LOWER (Make) LIKE '%bmw%' AND
+  LOWER (Model) LIKE '%x%'
+GROUP BY
+  1,
+  2

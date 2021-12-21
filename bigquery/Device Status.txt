@@ -1,0 +1,19 @@
+SELECT
+  *
+FROM
+  `geotab-embedded.Summary.DeviceCurrentStatus`
+WHERE
+  SerialNo IN('G74E20FF6E03',
+    'G7B02100A134',
+    'G7772100A2F2',
+    'G74A20FF6D06',
+    'G72820FF6E65')
+
+SELECT
+  *
+FROM
+  `geotab-embedded.Summary.DeviceCurrentStatus`
+WHERE
+  SerialNo IN('DS862121C423',
+    'DS872121C422',
+    'DS842121C421')

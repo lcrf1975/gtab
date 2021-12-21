@@ -1,0 +1,4 @@
+SELECT *
+FROM `geotab-gateway.Gateway.VehicleClient`
+WHERE DATE(_PARTITIONTIME) = "2021-07-07"
+LIMIT 1000

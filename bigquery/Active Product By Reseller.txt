@@ -1,0 +1,10 @@
+SELECT
+  ProductCode,
+  Count(ProductCode) AS Num
+FROM
+  `geotab-embedded.Summary.DeviceCurrentStatus`
+WHERE 
+  LOWER(DatabaseName) LIKE "%toyota_br%"
+  AND LOWER(Termination) = "no"
+GROUP BY
+  1

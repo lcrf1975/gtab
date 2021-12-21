@@ -1,0 +1,15 @@
+SELECT
+  DateTime,
+  MachineName,
+  RemoteIp,
+  UserName,
+  CallName,
+  CallDetails
+FROM
+  `geotab-myserver.MyGeotab.ApiUsage_2020*`
+WHERE
+  LOWER(Database) LIKE "%toyota_br%"
+  AND LOWER(CallName) = "authenticate"
+  AND LOWER(CallDetails) LIKE "%invaliduserexception%"
+  AND DATE(DateTime) BETWEEN '2020-10-13' AND '2020-12-01'
+ORDER BY DateTime DESC

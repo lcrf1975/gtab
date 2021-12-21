@@ -1,0 +1,11 @@
+SELECT DISTINCT Guid, CustomerName, DatabaseName
+FROM `geotab-gateway.Gateway.ClientInfo`
+WHERE
+  _PARTITIONTIME BETWEEN TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 30 DAY) AND CURRENT_TIMESTAMP()
+  AND LOWER(DatabaseName) in ('geotablatam', 'brazil', 'g560')
+
+
+FROM `geotab-gateway.Gateway.ClientInfo`
+WHERE
+    DATE(_PARTITIONTIME) = "2021-10-27"
+    AND LOWER(DatabaseName) IN('emin_demo')

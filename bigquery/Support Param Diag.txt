@@ -1,0 +1,28 @@
+SELECT DISTINCT 
+  STATUS.SerialNo AS SERIAL,
+  STATUS.ProductCode AS PCODE,
+  CONCAT (STATUS.MajorVersion, '.', STATUS.MinorVersion) AS FW,
+  STATUS.ResellerAccount AS CUSTOMER,
+  STATUS.PlanDescription AS PLAN,
+  STATUS.Vin AS FULLVIN,
+  VIN.MaskedVin AS MASKEDVIN,
+  VIN.Make AS MAKE,
+  VIN.Model AS MODEL,
+  VIN.Year AS YEAR,
+  VIN.Description AS PARAM
+FROM
+  `geotab-embedded.DatasetEngineStatus.EngineStatusSupportByMaskedVin_*` VIN
+INNER JOIN
+  `geotab-embedded.Summary.DeviceCurrentStatus_*` STATUS
+  ON
+    LEFT(VIN.MaskedVin, 8) = LEFT (STATUS.VIN, 8)
+WHERE
+  LEFT (VIN.MaskedVin, 8) = '8AJDA3CD'
+  AND LOWER(VIN.Description) LIKE '%odometer%'
+  AND VIN.PercentageSupported = 100
+  AND LOWER (STATUS.Make) = 'toyota'
+  AND LOWER (STATUS.Model) = 'hilux'
+  AND VIN.Year = '2020'
+  AND LEFT (STATUS.ProductCode, 3) = 'GO9'
+  AND STATUS.Termination = 'No'
+  AND CONCAT (STATUS.MajorVersion, '.', STATUS.MinorVersion) = '30.43'

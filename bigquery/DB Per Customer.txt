@@ -1,0 +1,11 @@
+SELECT
+  DatabaseName,
+  Active
+FROM
+  `geotab-myadmin.DeviceInformation.AccountDatabase_*`
+WHERE
+  _TABLE_SUFFIX = FORMAT_TIMESTAMP('%Y%m%d', CURRENT_TIMESTAMP())
+  AND AccountId = 'OURO01'
+  AND Active = false
+ORDER BY
+    DatabaseName

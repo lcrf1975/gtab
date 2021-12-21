@@ -1,0 +1,43 @@
+SELECT
+  Country,
+  ResellerAccount,
+  Count(SerialNo) AS Units
+FROM
+  `geotab-embedded.Summary.DeviceCurrentStatus`
+WHERE 
+  LOWER (Country) IN ("argentina", 
+                      "belize", 
+                      "bolivia", 
+                      "brazil", 
+                      "chile", 
+                      "colombia", 
+                      "costa rica", 
+                      "cuba", 
+                      "dominican republic", 
+                      "ecuador", 
+                      "el salvador", 
+                      "french guiana", 
+                      "guadeloupe", 
+                      "guatemala", 
+                      "guyana", 
+                      "haiti", 
+                      "honduras", 
+                      "martinique", 
+                      "mexico", 
+                      "nicaragua", 
+                      "panama", 
+                      "paraguay", 
+                      "peru", 
+                      "puerto rico", 
+                      "saint-barthélemy", 
+                      "saint-martin", 
+                      "suriname", 
+                      "uruguay", 
+                      "venezuela") 
+  AND LOWER(Termination) = "no"
+GROUP BY
+  1,
+  2
+ORDER BY
+  Country,
+  Units DESC

@@ -1,0 +1,17 @@
+SELECT
+  *
+FROM
+  `geotab-myserver.ServerMonitors.MyServerInfo_20201130`
+WHERE
+  ServerName LIKE 'my918.geotab.com'
+LIMIT
+  1000
+
+
+Select ServerLocation, ServerName
+from `geotab-myserver.ServerMonitors.MyServerInfo_*`
+where
+    _table_suffix = Format_Date('%Y%m%d', Current_Date())
+    and lower(ServerLocation) like '%brazil%'
+group by 1, 2
+order by 1, 2

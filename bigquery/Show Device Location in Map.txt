@@ -1,0 +1,9 @@
+SELECT
+  HardwareId,
+  ST_GEOGPOINT(Longitude,
+    Latitude) AS geopoint
+FROM
+  `geotab-embedded.Summary.DeviceCurrentStatus`
+WHERE
+  ResellerAccount = 'STAF01'
+  AND DATE(lastConnect) = CURRENT_DATE()

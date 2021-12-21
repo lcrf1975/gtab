@@ -1,0 +1,11 @@
+SELECT
+  *
+FROM
+  `geotab-embedded.DatasetEngineStatus.EngineStatusSupport_20201125`
+WHERE
+  LOWER (Make) LIKE '%dacia%'
+  AND LOWER (Model) LIKE '%sandero%'
+  AND LOWER (Description) LIKE '%fuel%'
+  AND PercentageSupported > 0
+ORDER BY
+  PercentageSupported DESC

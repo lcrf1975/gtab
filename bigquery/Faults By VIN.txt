@@ -1,0 +1,10 @@
+SELECT
+  Code
+FROM
+  `geotab-embedded.DatasetEngineFault.FaultDataCounts_*`
+WHERE
+  LEFT (Vin,9) = '9BSR4X200'
+GROUP BY
+  1
+ORDER BY
+  1

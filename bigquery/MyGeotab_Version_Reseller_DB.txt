@@ -1,0 +1,23 @@
+SELECT
+  R.Location.Country AS Country,
+  R.ResellerName AS ResellerName,
+  S.DatabaseName AS Database,
+  V.ServerName AS ServerName,
+  V.CheckmateVersion AS Version
+FROM
+  `geotab-bigdata.DeviceLifecycle.ResellerDetails` R
+INNER JOIN
+  geotab-embedded.Summary.DeviceCurrentStatus S
+ON
+  R.ResellerId = S.ResellerAccount
+INNER JOIN
+  `geotab-myserver.ServerMonitors.MyServerInfo_*` V
+ON
+  V.ServerName = S.MyServerName
+WHERE
+  _TABLE_SUFFIX = FORMAT_TIMESTAMP('%Y%m%d', CURRENT_TIMESTAMP())
+  AND R.Location.Region = ("Region 8 (LAT)")
+GROUP BY
+  1, 2, 3, 4, 5
+ORDER BY
+  1, 2, 3, 4, 5

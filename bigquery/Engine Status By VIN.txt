@@ -1,0 +1,9 @@
+SELECT
+  MIN (Value) AS MinTemp,
+  MAX (Value) AS MaxTemp,
+  AVG (Value) AS AvgTemp
+FROM
+  `geotab-embedded.AllDeviceData.EngineStatus_2021*`
+WHERE
+  Code = 56
+  AND LEFT (Vin, 9) = 'SJNFAAZE1'

@@ -1,0 +1,12 @@
+SELECT
+  ProductCode,
+  COUNT(SerialNo) AS Units
+FROM
+  `geotab-embedded.Summary.DeviceCurrentStatus`
+WHERE
+  LOWER (Country) IN ("brazil")
+  AND LOWER(Termination) = "no"
+  AND FirstConnect IS NOT NULL
+  AND DatabaseName = 'pepsico_brasil'
+GROUP BY
+  1

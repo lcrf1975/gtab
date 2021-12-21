@@ -1,0 +1,41 @@
+WITH
+  cte1 AS (
+  SELECT
+    DatabaseName,
+    CustomerId,
+    Guid,
+    ROW_NUMBER() OVER (PARTITION BY Guid ORDER BY LastConnect DESC) AS rowRank
+  FROM
+    `geotab-bigdata.PrivacyReferenceData.MasterCustomer`),
+  cte2 AS (
+  SELECT
+    CASE
+      WHEN ClientType = -1 THEN 'Blacklisted'
+      WHEN ClientType = 0 THEN 'Active'
+      WHEN ClientType = 1 THEN 'Shared'
+      ELSE 'Error'
+    END AS Type,
+    HardwareId AS HardwareId,
+    STRING(DateFrom, "America/Toronto") AS ActiveFrom,
+    STRING(DateTo, "America/Toronto") AS ActiveTo,
+    ClientGuid AS GUID
+  FROM
+    `geotab-bigdata.DeviceOwnership.DeviceOwnership`
+  WHERE
+    HardwareId IN (553419486) ) --change hardwareID here
+SELECT
+  hardwareid,
+  type,
+  ActiveFrom,
+  ActiveTo,
+  DatabaseName,
+  CustomerId,
+  cte1.guid
+FROM
+  cte2
+INNER JOIN
+  cte1
+ON
+  cte2.GUID = cte1.GUID
+WHERE
+  cte1.rowRank = 1

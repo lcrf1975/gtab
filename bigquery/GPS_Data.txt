@@ -1,0 +1,45 @@
+SELECT
+  STATUS.SerialNo,
+  GPS.Latitude,
+  GPS.Longitude,
+  GPS.DateTime,
+  GPS.Speed,
+  GPS.Ignition,
+  GPS.GPSValid
+FROM
+  `geotab-embedded.AllDeviceData.Gps_*` GPS
+INNER JOIN
+  `geotab-embedded.Summary.DeviceCurrentStatus` STATUS
+ON
+  GPS.HardwareId = STATUS.HardwareId
+WHERE
+  _table_suffix = FORMAT_DATE('%Y%m%d', CURRENT_DATE())
+  AND STATUS.DatabaseName = 'ava_embu'
+  AND DATE(GPS.DateTime) BETWEEN '2021-11-01'
+  AND '2021-11-30'
+ORDER BY
+  STATUS.SerialNo,
+  GPS.DateTime DESC
+
+SELECT
+  STATUS.SerialNo,
+  GPS.Latitude,
+  GPS.Longitude,
+  GPS.DateTime,
+  GPS.Speed,
+  GPS.Ignition,
+  GPS.GPSValid
+FROM
+  `geotab-devicedata-raw.DeviceData_EU.Gps` GPS
+INNER JOIN
+  `geotab-embedded.Summary.DeviceCurrentStatus` STATUS
+ON
+  GPS.HardwareId = STATUS.HardwareId
+WHERE
+  DATE(SystemDateTime) = "2021-12-01"
+  AND STATUS.DatabaseName = 'ava_embu'
+  AND DATE(GPS.DateTime) BETWEEN '2021-11-01'
+  AND '2021-11-30'
+ORDER BY
+  STATUS.SerialNo,
+  GPS.DateTime DESC
